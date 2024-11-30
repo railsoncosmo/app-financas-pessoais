@@ -8,8 +8,23 @@ import AppRoutes from './app.routes';
 
 function Routes(){
     
-    const { signed } = useContext(AuthContext); // Controla o usuário logado para condicionar a rota
-    const loading = false;
+    const { signed, loadingLogin } = useContext(AuthContext); // Controla o usuário logado para condicionar a rota
+    
+    //loading para carregar se o usuário está autenticado para acessar o app
+    if(loadingLogin){
+        return(
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#f0f4ff'
+                }}
+            >
+                <ActivityIndicator size="large" color="#131313" />
+            </View>
+        )
+    }
 
     return(
        /* Verficação de rotas: Se o usuário estiver logado, irá mostrar a tela principal, 

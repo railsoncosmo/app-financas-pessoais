@@ -57,6 +57,7 @@ export default function Login(){
                     <Input
                         placeholder="Senha"
                         value={senha}
+                        secureTextEntry={true}
                         onChangeText={(text) => setSenha(text)}
                     />
                 </AreaInput>
