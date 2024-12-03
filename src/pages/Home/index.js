@@ -1,18 +1,15 @@
 import React, { useContext} from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text } from 'react-native';
 
-import { AuthContext } from '../../contexts/auth';
+import Header from '../../components/header';
+import { Background } from './style';
 
 export default function Home() {
-  const { logout } = useContext(AuthContext); //Acessando a função do contexts para executar a função logout
 
  return (
-   <View>
-     <Text>Tela Home</Text>
-     <Button
-      title='Sair da conta'
-      onPress={() => logout()} //Chama a função para realizar o logout do app
-     />
-   </View>
+   <Background>
+    {/* O componente Header recebe o tittle como propriedade de cada página */}
+    <Header tittle="Movimentações"/>
+   </Background>
   );
 }
