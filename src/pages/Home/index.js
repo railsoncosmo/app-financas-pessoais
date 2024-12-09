@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState} from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 import Header from '../../components/Header';
-import { Background, ListBalance } from './style';
+import Moviment from '../../components/Moviment';
+import { Background, ListBalance, AreaMoviment, Tittle, ListMoviment } from './style';
 
 import api from '../../services/api';
 import { format } from 'date-fns';
@@ -10,11 +11,14 @@ import { format } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 import BalanceItem from '../../components/BalanceItem';
 
+import Icon from '@react-native-vector-icons/feather';
+
 export default function Home() {
   const IsFocused = useIsFocused(); //Verifica se o componente está sendo exibido na tela e retorna true ou false
 
   const [listBalance, setListBalance] = useState([]); //Estado que irá armazenar a resposta do backend
   const [dateMoviment, setDateMoviment] = useState(new Date()); //Estado que irá armazenar a data atual
+  const [listMoviment, setListMoviment] = useState([]);
 
   useEffect(() => {
     let isActive = true;
@@ -27,8 +31,15 @@ export default function Home() {
           date: dateFormated //Api irá receber como parametro a data enviada
         }
       })
+
+      const receives = await api.get('receives', {
+        params: {
+          date: dateFormated
+        }
+      })
       //Variável isActive verifica se o componente está ativo na tela, se estiver ativo, irá setar a os dados em setListBalance
       if(isActive){
+        setListMoviment(receives.data);
         setListBalance(balance.data);
       }
     }
@@ -38,7 +49,21 @@ export default function Home() {
     return () => {
       isActive = false
     }
-  }, [IsFocused]) //Verifica se o componente estiver sendo exibido na tela, se estiver, irá executar o useEffect e atualizar os dados do backend
+  }, [IsFocused, dateMoviment]) //Verifica se o componente estiver sendo exibido na tela, se estiver, irá executar o useEffect e atualizar os dados do backend
+
+  async function handleDelete(id){
+    try {
+      await api.delete('/receives/delete', {
+        params: {
+          item_id: id
+        }
+      })
+
+      setDateMoviment(new Date())
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
  return (
    <Background>
@@ -52,6 +77,21 @@ export default function Home() {
       keyExtractor={(item) => (item.tag)}
       renderItem={({ item })=> ( <BalanceItem data={item}/> )}
     />
+
+    <AreaMoviment>
+      <TouchableOpacity>
+        <Icon name="calendar" size={29} color="#121212"/>
+      </TouchableOpacity>
+        <Tittle>Ultimas movimentações</Tittle>
+    </AreaMoviment>
+
+    <ListMoviment
+      data={listMoviment}
+      keyExtractor={(item) => (item.id)}
+      renderItem={({ item }) => <Moviment data={item} deleteItem={handleDelete} /> } //Enviando o data da api para componente Moviment
+      showsVerticalScrollIndicator={false}
+      />
+    
    </Background>
   );
 }

@@ -6,7 +6,13 @@ import { TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { RegisterTypes } from "../../components/RegisterTypes";
 import Header from "../../components/Header";
 
+import api from "../../services/api";
+import { format } from "date-fns"; 
+
+import { useNavigation } from "@react-navigation/native"; //Importa o hook de navegação
 export default function Lancamento() {
+    const navigation = useNavigation(); //Instância a navegação
+
     const [descriptionInput, setDescriptionInput] = useState("");
     const [valueInput, setValueInput] = useState("");
     const [type, setType] = useState('receita'); //O valor do lançamento inicia com o valor 'receita'
@@ -29,11 +35,26 @@ export default function Lancamento() {
                 },
                 {
                     text: 'Continuar',
-                    onPress: () => alert('Lançamento realizado com sucesso!')
+                    onPress: () => registerLancamento()
                 }
             ]
         )
 
+        async function registerLancamento(){
+            Keyboard.dismiss(); //Fechar o teclado ao registrar
+
+            await api.post('/receive',{
+                description: descriptionInput,
+                value: Number(valueInput),
+                type: type,
+                date: format(new Date(), 'dd/MM/yyyy') //Formatando a data para o padrão brasileiro dd/MM/yyyy
+            })
+
+        setDescriptionInput('');
+        setValueInput('');
+        navigation.navigate('Home'); //Navega para a tela Home após o lançamento
+
+        }
     }
 
     return(
