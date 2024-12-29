@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState} from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Modal } from 'react-native';
 
 import Header from '../../components/Header';
 import Moviment from '../../components/Moviment';
@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 
 import { useIsFocused } from '@react-navigation/native';
 import BalanceItem from '../../components/BalanceItem';
+import CalendarModal from '../../components/CalendarModal';
 
 import Icon from '@react-native-vector-icons/feather';
 
@@ -19,6 +20,7 @@ export default function Home() {
   const [listBalance, setListBalance] = useState([]); //Estado que irá armazenar a resposta do backend
   const [dateMoviment, setDateMoviment] = useState(new Date()); //Estado que irá armazenar a data atual
   const [listMoviment, setListMoviment] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false); //Modal inicia desativado
 
   useEffect(() => {
     let isActive = true;
@@ -79,7 +81,7 @@ export default function Home() {
     />
 
     <AreaMoviment>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => setModalVisible(true)}>
         <Icon name="calendar" size={29} color="#121212"/>
       </TouchableOpacity>
         <Tittle>Ultimas movimentações</Tittle>
@@ -91,6 +93,16 @@ export default function Home() {
       renderItem={({ item }) => <Moviment data={item} deleteItem={handleDelete} /> } //Enviando o data da api para componente Moviment
       showsVerticalScrollIndicator={false}
       />
+
+      <Modal
+        visible={modalVisible}
+        animationType='fade'
+        transparent={true}
+      >
+        <CalendarModal
+          setVisible={() => setModalVisible(false)}
+        />
+      </Modal>
     
    </Background>
   );
