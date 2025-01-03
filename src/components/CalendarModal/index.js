@@ -4,50 +4,59 @@ import { Container, ButtonTextFilter, ModalContent, ButtonFilter } from "./style
 import { View, TouchableWithoutFeedback } from 'react-native';
 
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { ptBR } from './localeCalendar';
 
-export default function CalendarModal({ setVisible }) {
-    const [dateNow, setDateNow] = useState(new Date());
+LocaleConfig.locales['pt-br'] = ptBR; //Configura o calendário para o português
+LocaleConfig.defaultLocale = 'pt-br';
+
+export default function CalendarModal({ setVisible, handleFilter }) {
+    const [dateNow, setDateNow] = useState(new Date()); //Recebe a data que o usuário seleciona no calendário
     const [markedDates, setMarkedDates] = useState({});
 
     function handleOnDayPress(date) {
 
-        setDateNow(new Date(date.dateString));
+        setDateNow(new Date(date.dateString)); //Recebe a data que o usuário seleciona no calendário
 
-        let markedDay = {};
+        let markedDay = {}; //Objeto que muda as propiedades visuais da data selecionada
 
         markedDay[date.dateString] = {
             selected: true,
             selectedColor: '#3b3dbf',
-            selectedTextColor: '#fff',
+            textColor: '#fff'
         }
 
         setMarkedDates(markedDay);
 
     }
 
+    function handleFilterDate() {
+        handleFilter(dateNow); //Envia a data selecionada para o componente pai
+        setVisible(); //Fecha o modal
+    }
+
     return(
         <Container>
-            <TouchableWithoutFeedback onPress={() => setVisible(false)}>
+            <TouchableWithoutFeedback onPress={setVisible}>
                 <View style={{ flex: 1}}></View>
             </TouchableWithoutFeedback>
 
             <ModalContent>
 
                 <Calendar
-                    onDayPress={() => handleOnDayPress}
-                    markedDates={markedDates}
-                    enableSwipeMonths={true}
+                    onDayPress={handleOnDayPress}
+                    markedDates={markedDates} //Recebe as propiedades visuais da data selecionada
+                    enableSwipeMonths={true} //Habilita o usuário a mudar de mês
                     theme={{
                         todayTextColor: '#ff0000',
-                        selectedDayBackgroundColor: '#00adf5',
+                        selectedDayBackgroundColor: '#3b3dbf',
                         selectedDayTextColor: '#fff', 
                     }}
                 />
 
 
-                <ButtonFilter>
+                <ButtonFilter onPress={handleFilterDate}>
                     <ButtonTextFilter>
-                        Filter
+                        Filtrar
                     </ButtonTextFilter>
                     </ButtonFilter>
             </ModalContent>

@@ -26,7 +26,9 @@ export default function Home() {
     let isActive = true;
 
     async function getMoviments(){
-      let dateFormated = format(dateMoviment, 'dd/MM/yyyy') //Formatando a data para o padrão brasileiro dd/MM/yyyy
+      let date = new Date(dateMoviment);
+      let onlyDate = date.valueOf() + date.getTimezoneOffset() * 60 * 1000; //Tirando o timeZone para formatar a data
+      let dateFormated = format(onlyDate, 'dd/MM/yyyy') //Formatando a data para o padrão brasileiro dd/MM/yyyy
 
       const balance = await api.get('/balance', {
         params:{
@@ -67,6 +69,10 @@ export default function Home() {
     }
   }
 
+  function filterDateMoviments(dateSelected){
+    setDateMoviment(dateSelected);
+  }
+
  return (
    <Background>
     {/* O componente Header recebe o tittle como propriedade de cada página */}
@@ -101,6 +107,7 @@ export default function Home() {
       >
         <CalendarModal
           setVisible={() => setModalVisible(false)}
+          handleFilter={filterDateMoviments}
         />
       </Modal>
     
